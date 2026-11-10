@@ -1,1 +1,16 @@
 date,item_id,item,source,category,close,change,change_pct,open,high,low,prev_close,volume,market_date,currency
+2026-11-10,AS,Amer Sports,yahoo,Equipment & Wearables,31.86,-0.6,-1.8484,31.99,31.98,30.99,32.46,6009957,2026-11-10,USD
+2026-11-10,ASO,Academy Sports,yahoo,Sporting Goods Retail,70.39,-0.79,-1.1099,68.64,70.61,67.81,71.18,1296529,2026-11-10,USD
+2026-11-10,BRBR,BellRing Brands,yahoo,Fitness Nutrition,10.17,0.55,5.7173,9.62,10.3975,9.5701,9.62,2938264,2026-11-10,USD
+2026-11-10,CELH,Celsius Holdings,yahoo,Fitness Nutrition,32.8,-0.39,-1.1751,33.03,33.25,32.5102,33.19,4570100,2026-11-10,USD
+2026-11-10,DECK,Deckers (Hoka),yahoo,Apparel & Footwear,89.79,-0.64,-0.7077,90.62,91.41,88.3501,90.43,2866132,2026-11-10,USD
+2026-11-10,DKS,Dick's Sporting Goods,yahoo,Sporting Goods Retail,150,2.31,1.5641,145.49,150.33,143.7628,147.69,1399146,2026-11-10,USD
+2026-11-10,GRMN,Garmin,yahoo,Equipment & Wearables,288.66,-3.14,-1.0761,287.72,289.93,283.82,291.8,590961,2026-11-10,USD
+2026-11-10,LTH,Life Time Group,yahoo,Gyms & Studios,47.42,0.53,1.1303,47.4,47.58,45.39,46.89,7496092,2026-11-10,USD
+2026-11-10,LULU,Lululemon,yahoo,Apparel & Footwear,110.37,-2.16,-1.9195,110.78,111.1,108.08,112.53,2150976,2026-11-10,USD
+2026-11-10,NKE,Nike,yahoo,Apparel & Footwear,38.67,-1.21,-3.0341,39.4,39.505,38.44,39.88,16148873,2026-11-10,USD
+2026-11-10,ONON,On Holding,yahoo,Apparel & Footwear,34.7,-2.83,-7.5406,34.72,35.58,33.87,37.53,24723686,2026-11-10,USD
+2026-11-10,PLNT,Planet Fitness,yahoo,Gyms & Studios,61.34,0.23,0.3764,61.1,61.49,60.11,61.11,1141680,2026-11-10,USD
+2026-11-10,PTON,Peloton,yahoo,Equipment & Wearables,5.81,-0.14,-2.3529,5.89,5.91,5.665,5.95,5974909,2026-11-10,USD
+2026-11-10,UAA,Under Armour,yahoo,Apparel & Footwear,5.16,-0.3,-5.4945,5.46,5.46,5.09,5.46,7578277,2026-11-10,USD
+2026-11-10,XPOF,Xponential Fitness,yahoo,Gyms & Studios,4.59,-0.15,-3.1645,4.67,4.675,4.45,4.74,549148,2026-11-10,USD

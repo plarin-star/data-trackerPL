@@ -1,3 +1,5 @@
 run_time,date,source,ok,count,error
 2026-11-10T21:25:02Z,2026-11-10,yahoo,False,0,no usable items (HTTP 429)
 2026-11-10T21:25:02Z,2026-11-10,finnhub,False,0,FINNHUB_API_KEY is not set
+2026-11-10T21:33:28Z,2026-11-10,yahoo,True,15,
+2026-11-10T21:33:28Z,2026-11-10,finnhub,False,0,FINNHUB_API_KEY is not set
