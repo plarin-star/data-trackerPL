@@ -188,6 +188,8 @@ GitHub Actions runs them on every push (`.github/workflows/tests.yml`).
 | `assets/trends.js` | Builds the Trends page: the value chart and the five findings |
 | `assets/vendor/chart.umd.js` | Chart.js 4.4.1, the charting library (license in `chart.js-LICENSE.md`) |
 | `assets/fonts/*.woff2` | Barlow and Barlow Condensed fonts (license in `OFL-LICENSE.txt`), stored here so the site works offline |
+| `assets/img/brick.svg` | Painted gray brick wall tile used as the page background |
+| `assets/img/dumbbell.webp` | Cast-iron dumbbell cutout (drawn for this project) in the Browse header |
 | `manifest.webmanifest` | Web app manifest: name, icons and colors used when the site is installed |
 | `sw.js` | Service worker: network first, saved copy when offline |
 | `icons/*.png` | App icons and favicon |
