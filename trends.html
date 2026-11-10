@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trends · Fitness Stock Tracker</title>
+  <meta name="description" content="How 15 fitness company stocks have moved since the tracker's first run.">
+  <meta name="theme-color" content="#1f5fbf">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/favicon-64.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <nav class="nav" aria-label="Main">
+    <div class="nav-inner">
+      <a class="brand" href="index.html"><img src="icons/icon-192.png" alt="" width="30" height="30"><span>Fitness Stock Tracker</span></a>
+      <div class="nav-links">
+        <a href="index.html">Today</a>
+        <a href="browse.html">Browse</a>
+        <a href="trends.html" aria-current="page">Trends</a>
+      </div>
+    </div>
+  </nav>
+  <main>
+    <div id="offline-notice" class="notice" hidden></div>
+    <div class="page-head">
+      <div>
+        <h1>Trends</h1>
+        <p id="trends-intro">Every number on this page is calculated in your browser from <code>data/history.csv</code>, so the page updates as the history grows.</p>
+      </div>
+    </div>
+
+    <section class="section explorer" aria-labelledby="explore-h" style="margin-top:0">
+      <h2 id="explore-h">Each value over time</h2>
+      <p class="lead">Pick a value and the stocks to show. Each line’s color is its category; the line style tells stocks in the same category apart.</p>
+      <div class="panel">
+        <div class="controls explorer-controls">
+          <label class="field">Value
+            <select id="metric"></select>
+          </label>
+          <div class="field">Quick pick
+            <div class="quick">
+              <button type="button" class="btn" data-pick="all">All</button>
+              <button type="button" class="btn" data-pick="none">None</button>
+              <button type="button" class="btn" data-pick="starred">My shortlist</button>
+            </div>
+          </div>
+        </div>
+        <fieldset class="item-picker" id="picker">
+          <legend class="visually-hidden">Stocks shown in the chart</legend>
+        </fieldset>
+        <div class="chart-box"><canvas id="explore-chart" role="img" aria-label="Line chart of the chosen value for the chosen stocks"></canvas></div>
+        <p class="chart-note" id="explore-note"></p>
+      </div>
+    </section>
+
+    <div id="findings"></div>
+
+    <p class="footer">Not investment advice. Prices come from Yahoo Finance, Nasdaq and Finnhub.</p>
+  </main>
+  <script src="assets/vendor/chart.umd.js"></script>
+  <script src="assets/app.js"></script>
+  <script src="assets/trends.js"></script>
+</body>
+</html>
