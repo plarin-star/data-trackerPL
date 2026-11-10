@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Browse · Fitness Stock Tracker</title>
+  <meta name="description" content="Filter, search, sort and star 15 fitness company stocks.">
+  <meta name="theme-color" content="#1f5fbf">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/favicon-64.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <nav class="nav" aria-label="Main">
+    <div class="nav-inner">
+      <a class="brand" href="index.html"><img src="icons/icon-192.png" alt="" width="30" height="30"><span>Fitness Stock Tracker</span></a>
+      <div class="nav-links">
+        <a href="index.html">Today</a>
+        <a href="browse.html" aria-current="page">Browse</a>
+        <a href="trends.html">Trends</a>
+      </div>
+    </div>
+  </nav>
+  <main>
+    <div id="offline-notice" class="notice" hidden></div>
+    <div class="page-head">
+      <div>
+        <h1>Browse</h1>
+        <p>Latest values for every stock. Click a column heading to sort it; click again to flip the order. Star a stock to keep it on your shortlist.</p>
+      </div>
+    </div>
+
+    <form class="controls" id="filters" role="search" onsubmit="return false">
+      <label class="field">Search
+        <input type="search" id="q" placeholder="Company or ticker" autocomplete="off">
+      </label>
+      <label class="field">Category
+        <select id="f-category"><option value="">All categories</option></select>
+      </label>
+      <label class="field">Since last run
+        <select id="f-direction">
+          <option value="">Up or down</option>
+          <option value="up">Up</option>
+          <option value="down">Down</option>
+        </select>
+      </label>
+      <label class="field">Source
+        <select id="f-source"><option value="">All sources</option></select>
+      </label>
+      <label class="field">Min price
+        <input type="number" id="f-min" min="0" step="1" inputmode="decimal" placeholder="$0">
+      </label>
+      <label class="field">Max price
+        <input type="number" id="f-max" min="0" step="1" inputmode="decimal" placeholder="Any">
+      </label>
+      <label class="check"><input type="checkbox" id="f-starred"> Starred only</label>
+      <button type="button" class="btn" id="clear-filters">Clear filters</button>
+    </form>
+
+    <div class="shortlist panel" id="shortlist" aria-live="polite"></div>
+
+    <p class="result-count" id="count" aria-live="polite"></p>
+    <div class="panel table-wrap" id="table"></div>
+
+    <p class="footer">Your shortlist is saved in this browser only.</p>
+  </main>
+  <script src="assets/app.js"></script>
+  <script src="assets/browse.js"></script>
+</body>
+</html>
