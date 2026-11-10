@@ -1,0 +1,24 @@
+{
+  "run_time": "2026-11-10T21:25:02Z",
+  "run_date": "2026-11-10",
+  "first_run_date": null,
+  "days_with_success": 0,
+  "items": 0,
+  "new_today": [],
+  "gone_today": [],
+  "previous_date": null,
+  "sources": [
+    {
+      "name": "yahoo",
+      "ok": false,
+      "count": 0,
+      "error": "no usable items (HTTP 429)"
+    },
+    {
+      "name": "finnhub",
+      "ok": false,
+      "count": 0,
+      "error": "FINNHUB_API_KEY is not set"
+    }
+  ]
+}
