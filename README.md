@@ -29,10 +29,13 @@ from one day to the next.
 | Source | Format | Login | What is kept |
 |---|---|---|---|
 | Yahoo Finance chart endpoint (`query1.finance.yahoo.com/v8/finance/chart/<ticker>?range=5d&interval=1d`) | JSON | none | The reply for each of the 15 tickers only |
+| Nasdaq quote endpoint (`api.nasdaq.com/api/quote/<ticker>/info?assetclass=stocks`) | JSON | none | The reply for each of the 15 tickers only |
 | Finnhub quote endpoint (`finnhub.io/api/v1/quote?symbol=<ticker>`) | JSON | free API key, stored as the repository secret `FINNHUB_API_KEY` | The reply for each of the 15 tickers only |
 
-Yahoo is the main source and Finnhub is the backup. When both report a stock on
-the same day, the history keeps the Yahoo row.
+Yahoo is the main source; Nasdaq and Finnhub are backups. When more than one
+source reports a stock on the same day, the history keeps one row for it, from
+the first source in this order: Yahoo, Nasdaq, Finnhub. The `source` column
+says which one it came from.
 
 ## How a daily run works
 
