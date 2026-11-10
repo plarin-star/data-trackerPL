@@ -7,11 +7,11 @@
 
   // Numeric columns shown in the table. Every one can be sorted up and down.
   const COLS = [
-    { key: "close", label: "Close", fmt: F.fmtMoney },
-    { key: "run_change", label: "Since last run ($)", fmt: F.fmtSignedMoney, colored: true },
-    { key: "run_pct", label: "Since last run (%)", fmt: (v) => F.arrow(v) + F.fmtPct(v), colored: true },
-    { key: "change_pct", label: "Market day (%)", fmt: F.fmtPct, colored: true },
-    { key: "high", label: "Day high", fmt: F.fmtMoney },
+    { key: "close", label: "Close", fmt: F.fmtMoney, cls: "price" },
+    { key: "run_pct", label: "Since last run (%)", fmt: F.fmtPct, colored: true, cls: "perf key" },
+    { key: "run_change", label: "Since last run ($)", fmt: F.fmtSignedMoney, colored: true, cls: "perf" },
+    { key: "change_pct", label: "Market day (%)", fmt: F.fmtPct, colored: true, cls: "perf" },
+    { key: "high", label: "Day high", fmt: F.fmtMoney, cls: "split" },
     { key: "low", label: "Day low", fmt: F.fmtMoney },
     { key: "volume", label: "Volume", fmt: F.fmtInt },
   ];
@@ -68,9 +68,9 @@
     render();
   }
 
-  function sortHeader(key, label, numeric) {
+  function sortHeader(key, label, numeric, cls) {
     const active = state.sortKey === key;
-    const th = el("th", { scope: "col", class: numeric ? "n" : null,
+    const th = el("th", { scope: "col", class: [numeric ? "n" : "", cls || ""].join(" ").trim() || null,
       "aria-sort": active ? (state.sortDir === 1 ? "ascending" : "descending") : null });
     th.append(el("button", { type: "button", class: "sort",
       "aria-label": "Sort by " + label + (active && state.sortDir === 1 ? ", high to low" : ", low to high"),
@@ -102,23 +102,23 @@
     const list = sorted(filtered());
     $("count").textContent = "Showing " + list.length + " of " + items.length + " stocks.";
     const head = el("tr", {},
-      el("th", { scope: "col" }, el("span", { class: "visually-hidden", text: "Star" })),
-      sortHeader("item_id", "Stock", false),
+      el("th", { scope: "col", class: "col-star" }, el("span", { class: "visually-hidden", text: "Star" })),
+      sortHeader("item_id", "Stock", false, "col-stock"),
+      COLS.map((c) => sortHeader(c.key, c.label, true, c.cls === "split" ? "split" : "")),
       el("th", { scope: "col", text: "Category" }),
-      COLS.map((c) => sortHeader(c.key, c.label, true)),
       el("th", { scope: "col", text: "Source" }));
     const body = list.map((i) => {
       const on = state.starred.has(i.item_id);
       return el("tr", {},
-        el("td", {}, el("button", { type: "button", class: "star", "aria-pressed": on ? "true" : "false",
+        el("td", { class: "col-star" }, el("button", { type: "button", class: "star", "aria-pressed": on ? "true" : "false",
           "aria-label": (on ? "Remove " : "Add ") + i.item + (on ? " from" : " to") + " shortlist",
           onclick: () => toggleStar(i.item_id), text: on ? "★" : "☆" })),
-        el("td", {}, el("span", { class: "ticker", text: i.item_id + " " }), el("span", { class: "company", text: i.item })),
+        el("td", { class: "stock" }, el("span", { class: "ticker", text: i.item_id }), el("span", { class: "company", text: i.item })),
+        COLS.map((c) => el("td", { class: "n " + c.cls + (c.colored ? " " + F.dirClass(i[c.key]) : ""), text: c.fmt(i[c.key]) })),
         el("td", {}, F.categoryTag(i.category)),
-        COLS.map((c) => el("td", { class: "n" + (c.colored ? " " + F.dirClass(i[c.key]) : ""), text: c.fmt(i[c.key]) })),
-        el("td", { text: i.source }));
+        el("td", { class: "company", text: i.source }));
     });
-    const table = el("table", {},
+    const table = el("table", { class: "board" },
       el("caption", { class: "visually-hidden", text: "Latest values, filtered and sorted" }),
       el("thead", {}, head), el("tbody", {}, body));
     if (!list.length) $("table").replaceChildren(el("p", { class: "empty", text: "No stocks match these filters. Clear a filter to see more." }));

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Browse · Fitness Stock Tracker</title>
   <meta name="description" content="Filter, search, sort and star 15 fitness company stocks.">
-  <meta name="theme-color" content="#1f5fbf">
+  <meta name="theme-color" content="#111315">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/favicon-64.png" type="image/png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -24,13 +24,15 @@
   </nav>
   <main>
     <div id="offline-notice" class="notice" hidden></div>
-    <div class="page-head">
-      <div>
+    <header class="page-head hero">
+      <div class="hero-text">
         <h1>Browse</h1>
         <p>Latest values for every stock. Click a column heading to sort it; click again to flip the order. Star a stock to keep it on your shortlist.</p>
       </div>
-    </div>
+      <img class="dumbbell" src="assets/img/dumbbell.webp" alt="" width="738" height="390" decoding="async">
+    </header>
 
+    <div class="panel filters-panel">
     <form class="controls" id="filters" role="search" onsubmit="return false">
       <label class="field">Search
         <input type="search" id="q" placeholder="Company or ticker" autocomplete="off">
@@ -57,6 +59,7 @@
       <label class="check"><input type="checkbox" id="f-starred"> Starred only</label>
       <button type="button" class="btn" id="clear-filters">Clear filters</button>
     </form>
+    </div>
 
     <div class="shortlist panel" id="shortlist" aria-live="polite"></div>
 
