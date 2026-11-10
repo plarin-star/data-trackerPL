@@ -5,12 +5,14 @@ For each ticker we ask for the last 5 trading days of daily candles:
 
 We keep only the tickers in config.ITEMS. The raw file stores Yahoo's reply
 for each ticker exactly as it came in, inside one JSON object.
+
+Yahoo answers plain scripts from cloud computers (like GitHub's) with
+"HTTP 429 Too Many Requests". The curl_cffi library makes the request look like
+it comes from the Chrome browser, which Yahoo accepts.
 """
 
 import time
 from datetime import datetime, timedelta, timezone
-
-from .http import get_json
 
 NAME = "yahoo"
 FORMAT = "json"
@@ -18,14 +20,42 @@ HOSTS = ["https://query1.finance.yahoo.com", "https://query2.finance.yahoo.com"]
 PARAMS = {"range": "5d", "interval": "1d"}
 
 
-def fetch(symbols, session):
-    """Download every ticker. Returns {"responses": {...}, "errors": {...}}."""
+def browser_session():
+    """A session that looks like Chrome to Yahoo."""
+    from curl_cffi import requests as cffi_requests
+
+    return cffi_requests.Session(impersonate="chrome")
+
+
+def get_chart(session, url, tries=3):
+    """Download one chart reply as JSON, retrying when Yahoo is busy."""
+    last_error = "request failed"
+    for attempt in range(tries):
+        try:
+            resp = session.get(url, params=PARAMS, timeout=20)
+            if resp.status_code == 200:
+                return resp.json()
+            last_error = f"HTTP {resp.status_code}"
+            if resp.status_code != 429 and resp.status_code < 500:
+                break  # e.g. 404 for an unknown ticker: retrying will not help
+        except Exception as exc:
+            last_error = type(exc).__name__
+        time.sleep(2 * (attempt + 1))
+    raise RuntimeError(last_error)
+
+
+def fetch(symbols, session=None):
+    """Download every ticker. Returns {"responses": {...}, "errors": {...}}.
+
+    The shared session from fetch.py is not used: Yahoo needs its own
+    browser-like session.
+    """
+    chrome = browser_session()
     responses, errors = {}, {}
     for symbol in symbols:
         for host in HOSTS:  # if the first host fails, try the second one
             try:
-                url = f"{host}/v8/finance/chart/{symbol}"
-                responses[symbol] = get_json(session, url, params=PARAMS)
+                responses[symbol] = get_chart(chrome, f"{host}/v8/finance/chart/{symbol}")
                 errors.pop(symbol, None)
                 break
             except Exception as exc:  # record and move on to the next ticker
