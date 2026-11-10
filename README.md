@@ -56,6 +56,21 @@ For every stock with a close on both of the last two dates in the history:
 size of the move, biggest first (ties by ticker), and the issue lists the top 5.
 Stocks present on only one of the two dates are listed as appeared or disappeared.
 
+## Website
+
+Live at **https://plarin-star.github.io/data-trackerPL/** (GitHub Pages, `main` branch, root folder).
+The pages load `data/history.csv` and `data/status.json` in the browser and do every calculation there.
+
+| Page | What it shows |
+|---|---|
+| `index.html` (Today) | Time of the last run, the status of each source, the counts from the status file, the biggest move, the top 5 moves since the previous run, and the latest values of every stock with their change since the previous run |
+| `browse.html` (Browse) | Latest values with filters (category, direction since last run, source, price range, starred), a search box for company names and tickers, sorting on every numeric column up and down, and a star on every stock that saves it to a shortlist kept in the browser (`localStorage`) |
+| `trends.html` (Trends) | A line chart of any value over the days with a stock picker, and five findings, each computed from `history.csv` with a chart and the numbers behind it |
+
+The site installs as an app (`manifest.webmanifest`, icons in `icons/`) and works offline:
+`sw.js` fetches everything from the network first and keeps a copy, so with no connection the
+pages still open and show the last data they loaded.
+
 ## Build the history from the raw files
 
 ```
