@@ -124,24 +124,24 @@ main { max-width: 1240px; margin: 0 auto; padding: 28px 16px 64px; }
 /* ---------- Browse hero: title on the brick, dumbbell opposite ---------- */
 .hero {
   position: relative;
-  min-height: 232px;
+  min-height: 200px;
   display: flex; align-items: flex-end;
   margin: -28px 0 24px;
   padding: 40px 0 24px;
 }
-.hero-text { position: relative; z-index: 1; max-width: min(62ch, calc(100% - 400px)); }
+.hero-text { position: relative; z-index: 1; max-width: min(62ch, calc(100% - 330px)); }
 .hero h1 { font-size: clamp(3.4rem, 9vw, 6rem); line-height: 0.9; }
 .hero p { text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6); }
 .dumbbell {
   position: absolute; right: 0; top: 50%;
-  width: clamp(260px, 32vw, 420px); height: auto;
+  width: clamp(190px, 23vw, 300px); height: auto;
   transform: translateY(-46%);
   filter: drop-shadow(0 8px 6px rgba(0, 0, 0, 0.5));
   pointer-events: none; user-select: none;
 }
 @media (max-width: 900px) {
-  .hero-text { max-width: calc(100% - 38vw); }
-  .dumbbell { width: 36vw; }
+  .hero-text { max-width: calc(100% - 30vw); }
+  .dumbbell { width: 26vw; }
 }
 @media (max-width: 600px) {
   .hero { min-height: 0; padding-top: 28px; }

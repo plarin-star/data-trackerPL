@@ -5,7 +5,7 @@
    Offline: the saved copy from the cache is used instead, so the site still
             opens and shows the last data it loaded. */
 
-const CACHE = "fitness-tracker-v2";
+const CACHE = "fitness-tracker-v4";
 const SHELL = [
   "./",
   "index.html",
@@ -48,7 +48,9 @@ self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET" || new URL(req.url).origin !== self.location.origin) return;
   event.respondWith(
-    fetch(req)
+    // "no-cache" makes the browser check the server for a newer copy instead
+    // of reusing one from its own cache, so updates show on the next visit.
+    fetch(req.url, { cache: "no-cache", credentials: "same-origin" })
       .then((resp) => {
         if (resp.ok) {
           const copy = resp.clone();
