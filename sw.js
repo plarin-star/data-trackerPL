@@ -5,7 +5,7 @@
    Offline: the saved copy from the cache is used instead, so the site still
             opens and shows the last data it loaded. */
 
-const CACHE = "fitness-tracker-v1";
+const CACHE = "fitness-tracker-v2";
 const SHELL = [
   "./",
   "index.html",
@@ -23,6 +23,8 @@ const SHELL = [
   "assets/fonts/barlow-latin-600-normal.woff2",
   "assets/fonts/barlow-condensed-latin-600-normal.woff2",
   "assets/fonts/barlow-condensed-latin-700-normal.woff2",
+  "assets/img/brick.svg",
+  "assets/img/dumbbell.webp",
   "icons/icon-192.png",
   "icons/icon-512.png",
   "icons/favicon-64.png",
