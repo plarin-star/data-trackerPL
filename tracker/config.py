@@ -25,7 +25,7 @@ ITEMS = [
     # Equipment and wearables
     {"item_id": "PTON", "item": "Peloton", "category": "Equipment & Wearables"},
     {"item_id": "GRMN", "item": "Garmin", "category": "Equipment & Wearables"},
-    {"item_id": "AMRS", "item": "Amer Sports", "category": "Equipment & Wearables"},
+    {"item_id": "AS", "item": "Amer Sports", "category": "Equipment & Wearables"},
     # Sporting goods stores
     {"item_id": "DKS", "item": "Dick's Sporting Goods", "category": "Sporting Goods Retail"},
     {"item_id": "ASO", "item": "Academy Sports", "category": "Sporting Goods Retail"},
