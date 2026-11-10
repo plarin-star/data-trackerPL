@@ -37,9 +37,9 @@ ITEMS = [
 ITEMS_BY_ID = {it["item_id"]: it for it in ITEMS}
 SYMBOLS = [it["item_id"] for it in ITEMS]
 
-# When both sources report a stock on the same day, the history keeps the
-# row from the first source in this list. The second source is the backup.
-SOURCE_PRIORITY = ["yahoo", "finnhub"]
+# When several sources report a stock on the same day, the history keeps the
+# row from the first source in this list. The others are backups.
+SOURCE_PRIORITY = ["yahoo", "nasdaq", "finnhub"]
 
 # The daily issue lists this many of the biggest moves.
 TOP_N_MOVES = 5

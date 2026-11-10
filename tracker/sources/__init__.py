@@ -6,7 +6,7 @@ fetch(symbols, session)  downloads the data and returns a payload dict
 parse(payload)           turns a payload into {item_id: {column: value}}
 """
 
-from . import finnhub, yahoo
+from . import finnhub, nasdaq, yahoo
 
 # Every source the pipeline calls, in priority order.
-SOURCES = {yahoo.NAME: yahoo, finnhub.NAME: finnhub}
+SOURCES = {yahoo.NAME: yahoo, nasdaq.NAME: nasdaq, finnhub.NAME: finnhub}
