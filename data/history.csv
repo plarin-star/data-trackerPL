@@ -14,3 +14,18 @@ date,item_id,item,source,category,close,change,change_pct,open,high,low,prev_clo
 2026-11-10,PTON,Peloton,yahoo,Equipment & Wearables,5.81,-0.14,-2.3529,5.89,5.91,5.665,5.95,5974909,2026-11-10,USD
 2026-11-10,UAA,Under Armour,yahoo,Apparel & Footwear,5.16,-0.3,-5.4945,5.46,5.46,5.09,5.46,7578277,2026-11-10,USD
 2026-11-10,XPOF,Xponential Fitness,yahoo,Gyms & Studios,4.59,-0.15,-3.1645,4.67,4.675,4.45,4.74,549148,2026-11-10,USD
+2026-11-11,AS,Amer Sports,yahoo,Equipment & Wearables,32.46,0.99,3.1459,32.15,32.83,32.15,31.47,4635600,2026-11-09,USD
+2026-11-11,ASO,Academy Sports,yahoo,Sporting Goods Retail,71.18,3.915,5.8203,68.69,71.29,67.47,67.265,3575200,2026-11-09,USD
+2026-11-11,BRBR,BellRing Brands,yahoo,Fitness Nutrition,9.62,0.46,5.0218,9.16,9.69,9.1,9.16,3134100,2026-11-09,USD
+2026-11-11,CELH,Celsius Holdings,yahoo,Fitness Nutrition,32.8,-0.39,-1.1751,32.97,33.25,32.51,33.19,4573900,2026-11-10,USD
+2026-11-11,DECK,Deckers (Hoka),yahoo,Apparel & Footwear,89.79,-0.64,-0.7077,90.62,91.41,88.35,90.43,2866800,2026-11-10,USD
+2026-11-11,DKS,Dick's Sporting Goods,yahoo,Sporting Goods Retail,150,2.31,1.5641,145.49,150.35,143.75,147.69,1470300,2026-11-10,USD
+2026-11-11,GRMN,Garmin,yahoo,Equipment & Wearables,288.66,-3.14,-1.0761,287.72,289.93,283.62,291.8,633300,2026-11-10,USD
+2026-11-11,LTH,Life Time Group,yahoo,Gyms & Studios,46.89,-0.23,-0.4881,47.54,48.17,46.65,47.12,2267600,2026-11-09,USD
+2026-11-11,LULU,Lululemon,yahoo,Apparel & Footwear,110.37,-2.16,-1.9195,110.61,111.1,108.08,112.53,2153500,2026-11-10,USD
+2026-11-11,NKE,Nike,yahoo,Apparel & Footwear,38.67,-1.21,-3.0341,39.4,39.51,38.44,39.88,16187300,2026-11-10,USD
+2026-11-11,ONON,On Holding,yahoo,Apparel & Footwear,37.53,0.17,0.455,37.67,37.99,36.865,37.36,23265600,2026-11-09,USD
+2026-11-11,PLNT,Planet Fitness,yahoo,Gyms & Studios,61.11,0.8,1.3265,60.02,61.74,59.43,60.31,1762900,2026-11-09,USD
+2026-11-11,PTON,Peloton,yahoo,Equipment & Wearables,5.95,0.34,6.0606,5.71,6,5.6,5.61,20483900,2026-11-09,USD
+2026-11-11,UAA,Under Armour,yahoo,Apparel & Footwear,5.16,-0.3,-5.4945,5.46,5.46,5.09,5.46,7588400,2026-11-10,USD
+2026-11-11,XPOF,Xponential Fitness,yahoo,Gyms & Studios,4.74,0.09,1.9355,4.72,4.9,4.545,4.65,631700,2026-11-09,USD
