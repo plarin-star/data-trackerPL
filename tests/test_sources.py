@@ -1,6 +1,6 @@
 """Each source converts to the common columns correctly."""
 
-from conftest import finnhub_payload, yahoo_payload, yahoo_reply
+from conftest import T2, finnhub_payload, yahoo_payload, yahoo_reply
 
 from tracker.build import COLUMNS
 from tracker.sources import finnhub, yahoo
@@ -21,7 +21,23 @@ def test_yahoo_uses_last_two_closes():
     assert row["currency"] == "USD"
 
 
-def test_yahoo_skips_missing_closes():
+def test_yahoo_uses_summary_price_when_newest_candle_is_empty():
+    # Real case from 2026-11-11: after the close, Yahoo left the newest daily
+    # candle empty but its summary already held that day's closing price.
+    reply = yahoo_reply("PTON", [5.95, 8.0])
+    result = reply["chart"]["result"][0]
+    result["indicators"]["quote"][0]["close"] = [5.95, None]
+    result["meta"].update(regularMarketPrice=5.81, regularMarketTime=T2 + 6 * 3600,
+                          regularMarketDayHigh=5.91, regularMarketDayLow=5.665, regularMarketVolume=5977454)
+    row = yahoo.parse_one(reply)
+    assert row["close"] == 5.81
+    assert row["market_date"] == "2026-11-10"  # the summary's day, not the day before
+    assert row["prev_close"] == 5.95           # the last candle before that day
+    assert abs(row["change_pct"] - (5.81 - 5.95) / 5.95 * 100) < 1e-9
+    assert row["high"] == 5.91 and row["low"] == 5.665 and row["volume"] == 5977454
+
+
+def test_yahoo_without_summary_falls_back_to_candles():
     reply = yahoo_reply("PTON", [7.0, 8.0])
     reply["chart"]["result"][0]["indicators"]["quote"][0]["close"] = [7.0, None]
     row = yahoo.parse_one(reply)

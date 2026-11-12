@@ -71,8 +71,19 @@ def _num(values, i):
     return values[i]
 
 
+def _exchange_date(stamp, offset):
+    """Unix time -> 'YYYY-MM-DD' in the exchange's own time zone."""
+    return (datetime.fromtimestamp(stamp, tz=timezone.utc) + timedelta(seconds=offset)).date().isoformat()
+
+
 def parse_one(reply):
-    """Turn Yahoo's reply for one ticker into our columns, or None."""
+    """Turn Yahoo's reply for one ticker into our columns, or None.
+
+    The latest price comes from the reply's summary ("meta"):
+    regularMarketPrice, regularMarketTime and the day's high, low and volume.
+    After the market closes, Yahoo sometimes leaves the newest daily candle
+    empty, so the candles are only used for the previous close and the open.
+    """
     try:
         result = reply["chart"]["result"][0]
     except (KeyError, IndexError, TypeError):
@@ -81,35 +92,52 @@ def parse_one(reply):
     stamps = result.get("timestamp") or []
     quote = ((result.get("indicators") or {}).get("quote") or [{}])[0]
     closes = quote.get("close") or []
+    offset = meta.get("gmtoffset") or 0
 
-    # Keep the trading days that have a closing price.
-    days = [i for i in range(len(stamps)) if _num(closes, i) is not None]
-    if not days:
+    # One entry per trading day that has a closing price: {date: candle index}.
+    candle = {}
+    for i, stamp in enumerate(stamps):
+        if _num(closes, i) is not None:
+            candle[_exchange_date(stamp, offset)] = i
+
+    if meta.get("regularMarketPrice") is not None and meta.get("regularMarketTime"):
+        close = meta["regularMarketPrice"]
+        market_date = _exchange_date(meta["regularMarketTime"], offset)
+        earlier = [d for d in candle if d < market_date]
+        prev_close = closes[candle[max(earlier)]] if earlier else meta.get("chartPreviousClose")
+        today = candle.get(market_date)
+        open_ = _num(quote.get("open"), today) if today is not None else None
+        high = meta.get("regularMarketDayHigh")
+        low = meta.get("regularMarketDayLow")
+        volume = meta.get("regularMarketVolume")
+    elif candle:
+        # No summary price: fall back to the last two candles.
+        dates = sorted(candle)
+        market_date = dates[-1]
+        last = candle[market_date]
+        close = closes[last]
+        prev_close = closes[candle[dates[-2]]] if len(dates) >= 2 else meta.get("chartPreviousClose")
+        open_ = _num(quote.get("open"), last)
+        high = _num(quote.get("high"), last)
+        low = _num(quote.get("low"), last)
+        volume = _num(quote.get("volume"), last)
+    else:
         return None
-    last = days[-1]
-    close = closes[last]
-    prev_close = closes[days[-2]] if len(days) >= 2 else meta.get("chartPreviousClose")
 
     change = change_pct = None
     if prev_close not in (None, 0):
         change = close - prev_close
         change_pct = change / prev_close * 100
 
-    # Market date of the last candle, in the exchange's own time zone.
-    offset = meta.get("gmtoffset") or 0
-    market_date = (
-        datetime.fromtimestamp(stamps[last], tz=timezone.utc) + timedelta(seconds=offset)
-    ).date().isoformat()
-
     return {
         "close": close,
         "change": change,
         "change_pct": change_pct,
-        "open": _num(quote.get("open"), last),
-        "high": _num(quote.get("high"), last),
-        "low": _num(quote.get("low"), last),
+        "open": open_,
+        "high": high,
+        "low": low,
         "prev_close": prev_close,
-        "volume": _num(quote.get("volume"), last),
+        "volume": volume,
         "market_date": market_date,
         "currency": meta.get("currency") or "USD",
     }
