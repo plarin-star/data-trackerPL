@@ -1,16 +1,21 @@
 # The daily pipeline. GitHub runs this on its own computers every day.
 #
-#   22:17 UTC  main run, after the US stock market closes (21:00 UTC)
-#   23:37 UTC  backup run, same UTC day. It skips itself if the main run
-#              already saved raw files today, so a dropped schedule is covered.
+#   05:17 UTC  main run (11:17 PM Central / 12:17 AM New York): hours after the
+#              market closed and hours before it opens, so the prices are the
+#              last full trading day. GitHub often starts scheduled runs 3 to 5
+#              hours late; running early in the UTC day keeps even a late start
+#              on the same UTC date, so no date is skipped.
+#   07:47 and 09:17 UTC  backup runs. Each skips itself if today's raw files
+#              were already saved, so a dropped schedule is covered.
 #
 # You can also start it by hand: Actions tab > Daily pipeline > Run workflow.
 name: Daily pipeline
 
 on:
   schedule:
-    - cron: "17 22 * * *"
-    - cron: "37 23 * * *"
+    - cron: "17 5 * * *"
+    - cron: "47 7 * * *"
+    - cron: "17 9 * * *"
   workflow_dispatch:
 
 permissions:
@@ -28,11 +33,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Skip the backup run if today already succeeded
+      - name: Skip a backup run if today already succeeded
         id: check
         run: |
           today=$(date -u +%F)
-          if [ "${{ github.event.schedule }}" = "37 23 * * *" ] && ls data/raw/$today/*.gz >/dev/null 2>&1; then
+          schedule="${{ github.event.schedule }}"
+          if [ -n "$schedule" ] && [ "$schedule" != "17 5 * * *" ] && ls data/raw/$today/*.gz >/dev/null 2>&1; then
             echo "Today's run already succeeded; nothing to do."
             echo "skip=true" >> "$GITHUB_OUTPUT"
           else

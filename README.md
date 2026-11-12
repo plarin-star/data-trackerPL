@@ -44,8 +44,11 @@ downloader uses `curl_cffi`, which sends the request the way the Chrome browser 
 ## How a daily run works
 
 `python -m tracker.run`, started by `.github/workflows/daily.yml` every day at
-22:17 UTC (after the US market closes at 21:00 UTC). A backup run at 23:37 UTC
-does the same thing only if no raw file was saved that day.
+05:17 UTC, hours after the US market closes (21:00 UTC) and before it opens
+(14:30 UTC), so the prices are the last full trading day's. GitHub often starts
+scheduled runs a few hours late; running early in the UTC day keeps a late start
+on the same date. Backup runs at 07:47 and 09:17 UTC do the same thing only if
+no raw file was saved that day.
 
 1. **Fetch**: call each source and save its reply to `data/raw/<YYYY-MM-DD>/<source>.json.gz`. A source that fails saves no file that day, and the run continues. Every source's result (worked or failed, number of stocks, error) goes into the status file and the run log.
 2. **Build**: rebuild `data/history.csv` from all raw files (see below).
@@ -159,7 +162,7 @@ GitHub Actions runs them on every push (`.github/workflows/tests.yml`).
 | `tracker/status.py` | Writes `data/status.json` and adds to `data/run_log.csv` |
 | `tracker/issue.py` | Opens, updates and closes the daily GitHub Issue |
 | `tracker/sources/__init__.py` | The list of sources |
-| `tracker/sources/yahoo.py` | Downloads and converts Yahoo Finance replies |
+| `tracker/sources/yahoo.py` | Downloads and converts Yahoo Finance replies (the latest price comes from the reply's summary, `regularMarketPrice`, because the newest daily candle can be empty after the close) |
 | `tracker/sources/nasdaq.py` | Downloads and converts Nasdaq replies |
 | `tracker/sources/finnhub.py` | Downloads and converts Finnhub replies |
 | `tracker/sources/http.py` | A GET helper that retries when a server is busy |
