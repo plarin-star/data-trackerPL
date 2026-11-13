@@ -14,3 +14,6 @@ run_time,date,source,ok,count,error
 2026-11-12T03:00:13Z,2026-11-12,yahoo,True,15,
 2026-11-12T03:00:13Z,2026-11-12,nasdaq,True,15,
 2026-11-12T03:00:13Z,2026-11-12,finnhub,False,0,FINNHUB_API_KEY is not set
+2026-11-13T13:08:58Z,2026-11-13,yahoo,True,15,
+2026-11-13T13:08:58Z,2026-11-13,nasdaq,True,15,
+2026-11-13T13:08:58Z,2026-11-13,finnhub,False,0,FINNHUB_API_KEY is not set
