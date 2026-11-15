@@ -1,5 +1,5 @@
 {
-  "run_time": "2026-11-15T12:46:32Z",
+  "run_time": "2026-11-15T19:41:11Z",
   "run_date": "2026-11-15",
   "first_run_date": "2026-11-10",
   "days_with_success": 6,
@@ -22,9 +22,9 @@
     },
     {
       "name": "finnhub",
-      "ok": false,
-      "count": 0,
-      "error": "FINNHUB_API_KEY is not set"
+      "ok": true,
+      "count": 15,
+      "error": ""
     }
   ]
 }
