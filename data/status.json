@@ -1,12 +1,12 @@
 {
-  "run_time": "2026-11-15T19:41:11Z",
-  "run_date": "2026-11-15",
+  "run_time": "2026-11-16T13:41:37Z",
+  "run_date": "2026-11-16",
   "first_run_date": "2026-11-10",
-  "days_with_success": 6,
+  "days_with_success": 7,
   "items": 15,
   "new_today": [],
   "gone_today": [],
-  "previous_date": "2026-11-14",
+  "previous_date": "2026-11-15",
   "sources": [
     {
       "name": "yahoo",
