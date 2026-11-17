@@ -5,7 +5,7 @@
    Offline: the saved copy from the cache is used instead, so the site still
             opens and shows the last data it loaded. */
 
-const CACHE = "fitness-tracker-v4";
+const CACHE = "fitness-tracker-v5";
 const SHELL = [
   "./",
   "index.html",

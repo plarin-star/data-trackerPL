@@ -148,8 +148,9 @@
   }
   function fmtTime(iso) {
     if (!iso) return "—";
-    return new Date(iso).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" });
+    return new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short" });
   }
+  function plural(n, word) { return n + " " + word + (n === 1 ? "" : "s"); }
   function dirClass(v) { return v == null || Math.abs(v) < 1e-9 ? "flat" : v > 0 ? "up" : "down"; }
   function arrow(v) { return v == null || Math.abs(v) < 1e-9 ? "" : v > 0 ? "▲ " : "▼ "; }
 
@@ -219,7 +220,7 @@
 
   window.FT = {
     CATEGORIES, NUMERIC, parseCSV, loadData, dates, rowsOn, computeMoves,
-    fmtMoney, fmtSignedMoney, fmtPct, fmtInt, fmtCompact, fmtDate, fmtShortDate, fmtTime,
+    fmtMoney, fmtSignedMoney, fmtPct, fmtInt, fmtCompact, fmtDate, fmtShortDate, fmtTime, plural,
     dirClass, arrow, cssVar, categoryVar, categoryColor, el, categoryTag, showError,
     getShortlist, saveShortlist,
   };
