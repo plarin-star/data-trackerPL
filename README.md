@@ -26,7 +26,7 @@ from one day to the next. The list lives in `tracker/config.py`.
 
 | Source | Address | Format | Login | What is kept |
 |---|---|---|---|---|
-| Yahoo Finance chart endpoint | `query1.finance.yahoo.com/v8/finance/chart/<ticker>?range=5d&interval=1d` | JSON | none | Yahoo's reply for each of the 15 tickers, nothing else. Each reply holds the last 5 trading days; the build uses the last two. |
+| Yahoo Finance chart endpoint | `query1.finance.yahoo.com/v8/finance/chart/<ticker>?range=5d&interval=1d` | JSON | none | Yahoo's reply for each of the 15 tickers, nothing else. Each reply holds the last 5 trading days; the build uses the latest finished day and the one before it. |
 | Nasdaq quote endpoint | `api.nasdaq.com/api/quote/<ticker>/info?assetclass=stocks` | JSON | none | Nasdaq's reply for each of the 15 tickers, nothing else |
 | Finnhub quote endpoint | `finnhub.io/api/v1/quote?symbol=<ticker>` | JSON | free API key, stored as the repository secret `FINNHUB_API_KEY` and sent in a request header, never written to any file | Finnhub's reply for each of the 15 tickers, nothing else |
 
@@ -40,6 +40,11 @@ says which one it came from.
 
 Yahoo refuses plain scripts from cloud computers (HTTP 429), so the Yahoo
 downloader uses `curl_cffi`, which sends the request the way the Chrome browser does.
+
+GitHub sometimes starts the scheduled run hours late. If a Yahoo reply was taken
+while the market was open (its last trade time falls inside the current regular
+session), the price is live, not a close, so the build uses the last finished
+trading day from the reply's daily candles instead.
 
 ## How a daily run works
 
@@ -82,7 +87,7 @@ build again gives a byte-for-byte identical file.
 | `item` | Company name | text |
 | `source` | Source the row came from: `yahoo`, `nasdaq` or `finnhub` | text |
 | `category` | Our group for the company (one of the five above) | text |
-| `close` | Latest regular-session closing price | US dollars |
+| `close` | Closing price of the latest finished trading day (`market_date`) | US dollars |
 | `change` | `close` minus `prev_close` | US dollars |
 | `change_pct` | `change` ÷ `prev_close` × 100 | percent |
 | `open` | Opening price of that trading day (empty for Nasdaq) | US dollars |
@@ -125,8 +130,8 @@ Served by GitHub Pages from the `main` branch, root folder. The pages load
 
 | Page | What it shows |
 |---|---|
-| `index.html` (Today) | Time of the last run, the status of each source, the counts from the status file, the biggest move, the top 5 moves since the previous run, and the latest values of every stock with their change since the previous run |
-| `browse.html` (Browse) | Latest values with filters (category, direction since last run, source, price range, starred), a search box for company names and tickers, sorting on every numeric column up and down, and a star on every stock that saves it to a shortlist kept in the browser (`localStorage`) |
+| `index.html` (Today) | Time of the last run, the status of each source, the counts from the status file, the biggest move, the top 5 moves since the previous run, and every stock's latest close with its change since the previous run |
+| `browse.html` (Browse) | Latest values with filters (category, direction since last run, price range, starred; a source filter appears when the latest day mixes sources), a search box for company names and tickers, sorting on every numeric column up and down, and a star on every stock that saves it to a shortlist kept in the browser (`localStorage`) |
 | `trends.html` (Trends) | A line chart of any value over the days with a stock picker, and five findings computed from `history.csv`, each with a chart, the numbers behind it, and how they are computed |
 
 The site installs as an app (`manifest.webmanifest`, icons in `icons/`) and works
@@ -142,7 +147,9 @@ python -m pytest
 
 The tests cover each source's conversion to the common columns, the move rule,
 and the history build, including a failed source and a second run on the same day.
-GitHub Actions runs them on every push (`.github/workflows/tests.yml`).
+GitHub Actions runs them on every push (`.github/workflows/tests.yml`). The
+daily data commit is pushed by the workflow's own token, which does not start
+other workflows, so the tests also run each time the daily pipeline finishes.
 
 ## Every file
 
@@ -168,13 +175,13 @@ GitHub Actions runs them on every push (`.github/workflows/tests.yml`).
 | `tracker/sources/http.py` | A GET helper that retries when a server is busy |
 | **Tests** | |
 | `tests/conftest.py` | Fake source replies shaped like the real ones, shared by the tests |
-| `tests/test_sources.py` | Yahoo and Finnhub conversion to the common columns |
+| `tests/test_sources.py` | Yahoo and Finnhub conversion to the common columns, including a Yahoo reply taken while the market was open |
 | `tests/test_nasdaq.py` | Nasdaq conversion to the common columns |
 | `tests/test_moves.py` | The move rule and the issue text |
 | `tests/test_history.py` | The history build, a failed source, and a second run on the same day |
 | **Workflows** | |
 | `.github/workflows/daily.yml` | Runs the pipeline every day and commits the data |
-| `.github/workflows/tests.yml` | Runs the tests on every push |
+| `.github/workflows/tests.yml` | Runs the tests on every push and after every daily pipeline run |
 | **Data** | |
 | `data/raw/<date>/<source>.json.gz` | What each source returned that day, compressed, in its original JSON format |
 | `data/history.csv` | One row per stock per day, built from the raw files |
