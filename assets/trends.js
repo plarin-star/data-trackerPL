@@ -67,14 +67,14 @@
   }
   function mean(xs) { return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null; }
 
-  // Change in close since tracking began, for each stock.
-  // Start: the close on the trading day before the first run (prev_close in
-  // the stock's first row), or that row's close if prev_close is empty.
+  // Change in close since the first run, for each stock: its first close in
+  // the history against its latest one. Same baseline as the
+  // "Close, first day = 100" chart, so the two always agree.
   function sinceStart(rows) {
-    return Object.entries(byItem(rows)).map(([id, list]) => {
+    return Object.entries(byItem(rows.filter((r) => r.close != null))).map(([id, list]) => {
       const first = list[0], last = list[list.length - 1];
-      const base = first.prev_close != null ? first.prev_close : first.close;
-      const pct = base && last.close != null ? ((last.close - base) / base) * 100 : null;
+      const base = first.close;
+      const pct = base ? ((last.close - base) / base) * 100 : null;
       return { item_id: id, item: last.item, category: last.category, base, baseDate: first.date, last: last.close, lastDate: last.date, pct };
     }).filter((x) => x.pct != null);
   }
@@ -144,7 +144,7 @@
       chart.options.plugins.tooltip.itemSort = (a, b) => (b.parsed.y ?? -Infinity) - (a.parsed.y ?? -Infinity);
       chart.options.plugins.tooltip.callbacks = { label: (c) => " " + metric.fmt(c.parsed.y) + "  " + c.dataset.label };
       chart.update();
-      $("explore-note").textContent = chosen.size + " of " + styles.length + " stocks shown · " + ds.length + " day(s) of history" +
+      $("explore-note").textContent = chosen.size + " of " + styles.length + " stocks shown · " + F.plural(ds.length, "day") + " of history" +
         (ds.length < 2 ? ". Lines appear once there are two or more days." : ".") +
         (metric.key === "indexed" ? " Index: each stock's close divided by its close on its first day, times 100." : "");
     }
@@ -203,15 +203,15 @@
     if (!list.length) return;
     const best = list[0], worst = list[list.length - 1];
     const ups = list.filter((x) => x.pct > 0).length;
-    const heading = best.item + " has gained the most since tracking began; " + worst.item + " has lost the most";
-    const explain = "From the close before the first run on " + F.fmtDate(firstDate) + " to the latest close on " + F.fmtDate(lastDate) +
+    const heading = best.item + " has gained the most since the first run; " + worst.item + " has lost the most";
+    const explain = "From its close in the first run on " + F.fmtDate(firstDate) + " to its close in the latest run on " + F.fmtDate(lastDate) +
       ", " + best.item + " (" + best.item_id + ") went from " + F.fmtMoney(best.base) + " to " + F.fmtMoney(best.last) + ", " + pctWords(best.pct) +
       ". " + worst.item + " (" + worst.item_id + ") went from " + F.fmtMoney(worst.base) + " to " + F.fmtMoney(worst.last) + ", " + pctWords(worst.pct) +
       ". " + ups + " of " + list.length + " stocks are higher than where they started.";
-    const how = "for each stock, (latest close − starting close) ÷ starting close × 100. The starting close is the prev_close value in the stock's first row of history.csv (its close on the trading day before the first run); the latest close is the close value in its last row.";
+    const how = "for each stock, (latest close − first close) ÷ first close × 100, where the first close is the close value in the stock's first row of history.csv and the latest close is the close value in its last row. It equals the last point of the “Close, first day = 100” chart minus 100.";
     const f = finding("since-start", heading, explain, how, barHeight(list.length));
-    hBar(f.canvas, list.map((x) => x.item_id + " " + x.item), list.map((x) => x.pct), list.map((x) => signColor(x.pct)), F.fmtPct, "Change since tracking began (%)");
-    numbersTable(f.details, ["Stock", "Starting close", "Latest close", "Change"],
+    hBar(f.canvas, list.map((x) => x.item_id + " " + x.item), list.map((x) => x.pct), list.map((x) => signColor(x.pct)), F.fmtPct, "Change since the first run (%)");
+    numbersTable(f.details, ["Stock", "First close", "Latest close", "Change"],
       list.map((x) => [x.item_id + " " + x.item, F.fmtMoney(x.base), F.fmtMoney(x.last), F.fmtPct(x.pct)]));
     return list;
   }
@@ -230,7 +230,7 @@
     const heading = top.item + "’s " + F.fmtPct(top.change_pct) + " on " + F.fmtDate(top.market_date) + " is the biggest one-day move so far";
     const explain = "On " + F.fmtDate(top.market_date) + ", " + top.item + " (" + top.item_id + ") closed at " + F.fmtMoney(top.close) +
       " after closing at " + F.fmtMoney(top.prev_close) + " the trading day before, a change of " + F.fmtSignedMoney(top.change) +
-      " (" + F.fmtPct(top.change_pct) + "). That is the largest move, up or down, among " + tdays.length + " stock-days across " + days.length + " trading day(s). The chart shows the biggest mover on each trading day.";
+      " (" + F.fmtPct(top.change_pct) + "). That is the largest move, up or down, among " + tdays.length + " stock-days across " + F.plural(days.length, "trading day") + ". The chart shows the biggest mover on each trading day.";
     const how = "rows of history.csv with the same item_id and market_date are counted once (weekends repeat Friday's prices). Among those, the row with the largest absolute change_pct wins; change_pct = (close − prev_close) ÷ prev_close × 100 as reported by the source.";
     const f = finding("biggest-day", heading, explain, how, 320);
     new Chart(f.canvas, {
@@ -253,13 +253,13 @@
       return { name: c.name, n: members.length, avg: mean(members.map((x) => x.pct)), members };
     }).filter((c) => c.n).sort((a, b) => b.avg - a.avg);
     const best = cats[0], worst = cats[cats.length - 1];
-    const heading = best.name + " stocks have done best as a group; " + worst.name + " have done worst";
-    const explain = "Averaging the change since " + F.fmtDate(firstDate) + " across the stocks in each category, " + best.name + " (" + best.members.map((m) => m.item_id).join(", ") + ") average " +
+    const heading = best.name + " stocks have " + (best.avg >= 0 ? "done best" : "held up best") + " as a group; " + worst.name + " have done worst";
+    const explain = "Averaging each stock's change since the first run on " + F.fmtDate(firstDate) + " within its category, " + best.name + " (" + best.members.map((m) => m.item_id).join(", ") + ") average " +
       F.fmtPct(best.avg) + ", while " + worst.name + " (" + worst.members.map((m) => m.item_id).join(", ") + ") average " + F.fmtPct(worst.avg) +
       ". The gap between the best and worst group is " + Math.abs(best.avg - worst.avg).toFixed(2) + " percentage points.";
-    const how = "the plain average of each stock's change since tracking began (from the first finding) over the stocks in the category column of history.csv. Each stock counts equally, whatever its price.";
+    const how = "the plain average of each stock's change since the first run (the numbers in the first finding), grouped by the category column of history.csv. Each stock counts equally, whatever its price.";
     const f = finding("categories", heading, explain, how, barHeight(cats.length));
-    hBar(f.canvas, cats.map((c) => c.name), cats.map((c) => c.avg), cats.map((c) => F.categoryColor(c.name)), F.fmtPct, "Average change since tracking began (%)");
+    hBar(f.canvas, cats.map((c) => c.name), cats.map((c) => c.avg), cats.map((c) => F.categoryColor(c.name)), F.fmtPct, "Average change since the first run (%)");
     numbersTable(f.details, ["Category", "Stocks", "Average change"], cats.map((c) => [c.name, String(c.n), F.fmtPct(c.avg)]));
   }
 
@@ -274,12 +274,14 @@
     const heading = most.item + " swings the most, about " + most.avg.toFixed(2) + "% a day; " + least.item + " is the steadiest";
     const explain = "On an average trading day, " + most.item + " (" + most.item_id + ") moves " + most.avg.toFixed(2) + "% up or down, while " +
       least.item + " (" + least.item_id + ") moves " + least.avg.toFixed(2) + "%" + (ratio ? ", so the most jumpy stock moves about " + ratio + " times as much as the steadiest." : ".") +
-      " Based on " + most.n + " trading day(s) per stock.";
+      " Based on " + F.plural(most.n, "trading day") + " per stock.";
     const how = "for each stock, the average of the absolute change_pct values over its trading days in history.csv (one row per item_id and market_date, so weekends are not counted twice).";
     const f = finding("volatility", heading, explain, how, barHeight(list.length));
     hBar(f.canvas, list.map((x) => x.item_id + " " + x.item), list.map((x) => x.avg), F.cssVar("--seq-bar"), (v) => v.toFixed(2) + "%", "Average daily move, up or down (%)");
     numbersTable(f.details, ["Stock", "Trading days", "Average daily move"], list.map((x) => [x.item_id + " " + x.item, String(x.n), x.avg.toFixed(2) + "%"]));
   }
+
+  const fmtDollars = (v) => "$" + F.fmtCompact(v).replace(/\.0(?=[KMB]$)/, "");
 
   function findingDollarVolume(rows) {
     const tdays = tradingDays(rows).filter((r) => r.volume != null && r.close != null);
@@ -289,20 +291,20 @@
     if (!list.length) return;
     const top = list[0], low = list[list.length - 1];
     const total = list.reduce((a, x) => a + x.avg, 0);
-    const heading = top.item + " is the most traded: about $" + F.fmtCompact(top.avg) + " of its stock changes hands each day";
-    const explain = top.item + " (" + top.item_id + ") averages " + F.fmtCompact(top.shares) + " shares a day at its closing prices, worth about $" + F.fmtCompact(top.avg) +
-      ", or " + ((top.avg / total) * 100).toFixed(0) + "% of the dollar volume across all " + list.length + " stocks. The least traded, " + low.item + " (" + low.item_id + "), averages about $" + F.fmtCompact(low.avg) + " a day.";
+    const heading = top.item + " is the most traded: about " + fmtDollars(top.avg) + " of its stock changes hands each day";
+    const explain = top.item + " (" + top.item_id + ") averages " + F.fmtCompact(top.shares) + " shares a day at its closing prices, worth about " + fmtDollars(top.avg) +
+      ", or " + ((top.avg / total) * 100).toFixed(0) + "% of the dollar volume across all " + list.length + " stocks. The least traded, " + low.item + " (" + low.item_id + "), averages about " + fmtDollars(low.avg) + " a day.";
     const how = "for each trading day, close × volume from history.csv (dollar volume), then the average over the stock's trading days. Days without a volume value (Finnhub rows) are skipped.";
     const f = finding("dollar-volume", heading, explain, how, barHeight(list.length));
-    hBar(f.canvas, list.map((x) => x.item_id + " " + x.item), list.map((x) => x.avg), F.cssVar("--seq-bar"), (v) => "$" + F.fmtCompact(v), "Average dollar volume per day");
-    numbersTable(f.details, ["Stock", "Average shares a day", "Average dollar volume"], list.map((x) => [x.item_id + " " + x.item, F.fmtCompact(x.shares), "$" + F.fmtCompact(x.avg)]));
+    hBar(f.canvas, list.map((x) => x.item_id + " " + x.item), list.map((x) => x.avg), F.cssVar("--seq-bar"), fmtDollars, "Average dollar volume per day");
+    numbersTable(f.details, ["Stock", "Average shares a day", "Average dollar volume"], list.map((x) => [x.item_id + " " + x.item, F.fmtCompact(x.shares), fmtDollars(x.avg)]));
   }
 
   F.loadData().then(({ rows }) => {
     setChartDefaults();
     const ds = F.dates(rows);
-    $("trends-intro").textContent = "Every number on this page is calculated in your browser from data/history.csv, which now covers " +
-      ds.length + " day(s), " + F.fmtDate(ds[0]) + " to " + F.fmtDate(ds[ds.length - 1]) + ". The page updates as the history grows.";
+    $("trends-intro").textContent = "Every number here is computed in your browser from data/history.csv (" +
+      F.plural(ds.length, "day") + ", " + F.fmtDate(ds[0]) + " to " + F.fmtDate(ds[ds.length - 1]) + "), so the page updates as the history grows.";
     explorer(rows);
     const list = findingSinceStart(rows, ds[0], ds[ds.length - 1]);
     findingBiggestDay(rows);
