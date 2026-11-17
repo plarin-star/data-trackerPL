@@ -10,7 +10,6 @@
     { key: "close", label: "Close", fmt: F.fmtMoney, cls: "price" },
     { key: "run_pct", label: "Since last run (%)", fmt: F.fmtPct, colored: true, cls: "perf key" },
     { key: "run_change", label: "Since last run ($)", fmt: F.fmtSignedMoney, colored: true, cls: "perf" },
-    { key: "change_pct", label: "Market day (%)", fmt: F.fmtPct, colored: true, cls: "perf" },
     { key: "high", label: "Day high", fmt: F.fmtMoney, cls: "split" },
     { key: "low", label: "Day low", fmt: F.fmtMoney },
     { key: "volume", label: "Volume", fmt: F.fmtInt },
@@ -29,7 +28,10 @@
     });
     const cats = F.CATEGORIES.map((c) => c.name).filter((c) => items.some((i) => i.category === c));
     cats.forEach((c) => $("f-category").append(el("option", { value: c, text: c })));
-    [...new Set(items.map((i) => i.source))].sort().forEach((s) => $("f-source").append(el("option", { value: s, text: s })));
+    const sources = [...new Set(items.map((i) => i.source))].sort();
+    sources.forEach((s) => $("f-source").append(el("option", { value: s, text: s })));
+    // A source filter with one choice filters nothing; show it only when the latest day mixes sources.
+    $("f-source").closest(".field").hidden = sources.length < 2;
   }
 
   function filtered() {
