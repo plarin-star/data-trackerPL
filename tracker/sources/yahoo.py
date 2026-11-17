@@ -76,6 +76,18 @@ def _exchange_date(stamp, offset):
     return (datetime.fromtimestamp(stamp, tz=timezone.utc) + timedelta(seconds=offset)).date().isoformat()
 
 
+def _in_session(meta):
+    """True when the reply was taken during regular trading hours.
+
+    regularMarketTime is the time of the last regular-session trade. If it
+    falls inside the current session (start <= time < end), that session has
+    not closed yet and regularMarketPrice is a live price.
+    """
+    session = (meta.get("currentTradingPeriod") or {}).get("regular") or {}
+    stamp, start, end = meta.get("regularMarketTime"), session.get("start"), session.get("end")
+    return None not in (stamp, start, end) and start <= stamp < end
+
+
 def parse_one(reply):
     """Turn Yahoo's reply for one ticker into our columns, or None.
 
@@ -83,6 +95,8 @@ def parse_one(reply):
     regularMarketPrice, regularMarketTime and the day's high, low and volume.
     After the market closes, Yahoo sometimes leaves the newest daily candle
     empty, so the candles are only used for the previous close and the open.
+    If the reply was taken while the market was open, the unfinished day is
+    ignored and the last finished trading day is used instead.
     """
     try:
         result = reply["chart"]["result"][0]
@@ -99,6 +113,12 @@ def parse_one(reply):
     for i, stamp in enumerate(stamps):
         if _num(closes, i) is not None:
             candle[_exchange_date(stamp, offset)] = i
+
+    if _in_session(meta):
+        # The reply was taken while the market was open, so the summary price
+        # is a live trade, not a close. Use the last finished trading day.
+        candle.pop(_exchange_date(meta["regularMarketTime"], offset), None)
+        meta = {k: v for k, v in meta.items() if not k.startswith("regularMarket")}
 
     if meta.get("regularMarketPrice") is not None and meta.get("regularMarketTime"):
         close = meta["regularMarketPrice"]

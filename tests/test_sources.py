@@ -1,6 +1,6 @@
 """Each source converts to the common columns correctly."""
 
-from conftest import T2, finnhub_payload, yahoo_payload, yahoo_reply
+from conftest import T1, T2, finnhub_payload, yahoo_payload, yahoo_reply
 
 from tracker.build import COLUMNS
 from tracker.sources import finnhub, yahoo
@@ -44,6 +44,30 @@ def test_yahoo_without_summary_falls_back_to_candles():
     # The last candle has no close, so the day before is the latest day.
     assert row["close"] == 7.0
     assert row["prev_close"] == 50.0  # falls back to chartPreviousClose
+
+
+def test_yahoo_ignores_live_price_while_market_is_open():
+    # A run that starts late, at 11:00 New York time on 2026-11-10: the summary
+    # holds a live price, so the row must be the last finished day (11-09).
+    reply = yahoo_reply("NKE", [60.0, 61.0, 99.0])
+    result = reply["chart"]["result"][0]
+    result["timestamp"] = [T1 - 86400, T1, T2]
+    result["meta"].update(regularMarketPrice=99.0, regularMarketTime=T2 + 5400,
+                          regularMarketDayHigh=100.0, regularMarketDayLow=98.0,
+                          currentTradingPeriod={"regular": {"start": T2, "end": T2 + 23400}})
+    row = yahoo.parse_one(reply)
+    assert row["market_date"] == "2026-11-09"
+    assert row["close"] == 61.0 and row["prev_close"] == 60.0
+    assert row["high"] == 63.0 and row["low"] == 59.0  # from the 11-09 candle
+
+
+def test_yahoo_keeps_summary_price_after_the_close():
+    reply = yahoo_reply("NKE", [60.0, 63.0])
+    reply["chart"]["result"][0]["meta"].update(
+        regularMarketTime=T2 + 23400,  # 4:00 pm New York, the close
+        currentTradingPeriod={"regular": {"start": T2, "end": T2 + 23400}})
+    row = yahoo.parse_one(reply)
+    assert row["close"] == 63.0 and row["market_date"] == "2026-11-10"
 
 
 def test_yahoo_error_reply_is_dropped():
