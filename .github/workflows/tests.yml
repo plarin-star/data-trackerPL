@@ -1,10 +1,17 @@
 # Runs the pytest suite on every push and pull request.
+#
+# Pushes made by a workflow's GITHUB_TOKEN do not start other workflows, so
+# the daily data commit would skip the tests. The workflow_run trigger covers
+# it: the tests run again each time the daily pipeline finishes.
 name: Tests
 
 on:
   push:
   pull_request:
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Daily pipeline"]
+    types: [completed]
 
 permissions:
   contents: read
@@ -14,8 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
