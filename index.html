@@ -9,7 +9,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/favicon-64.png" type="image/png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="assets/style.css?v=4">
+  <link rel="stylesheet" href="assets/style.css?v=5">
 </head>
 <body>
   <nav class="nav" aria-label="Main">
@@ -35,7 +35,7 @@
 
     <section class="section" aria-labelledby="run-h">
       <h2 id="run-h">Last run</h2>
-      <p class="lead">What the daily pipeline did on its most recent run, from <code>data/status.json</code>.</p>
+      <p class="lead">The pipeline’s most recent run, from <code>data/status.json</code>.</p>
       <div class="run-grid">
         <div class="panel stat-list" id="counts"></div>
         <div class="panel" id="sources"></div>
@@ -50,13 +50,13 @@
 
     <section class="section" aria-labelledby="all-h">
       <h2 id="all-h">All 15 stocks</h2>
-      <p class="lead">Latest closing price of every stock. “Since last run” compares with the previous date in the history; “Market day” is the change the source reported against the stock’s prior trading day.</p>
+      <p class="lead">Latest close of every stock and its change since the previous run.</p>
       <div class="panel table-wrap" id="latest"></div>
     </section>
 
     <p class="footer">Data: Yahoo Finance, Nasdaq and Finnhub, collected once a day by GitHub Actions. Not investment advice.</p>
   </main>
-  <script src="assets/app.js?v=4"></script>
-  <script src="assets/today.js?v=4"></script>
+  <script src="assets/app.js?v=5"></script>
+  <script src="assets/today.js?v=5"></script>
 </body>
 </html>

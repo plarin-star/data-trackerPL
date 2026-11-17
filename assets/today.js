@@ -6,7 +6,7 @@
   const { el } = F;
   const TOP_N = 5; // same number the daily issue lists
 
-  function scoreboard(m, rows, status) {
+  function scoreboard(m) {
     const box = document.getElementById("scoreboard");
     box.replaceChildren();
     const top = m.moves[0];
@@ -48,14 +48,13 @@
     }
   }
 
-  function counts(status, m) {
+  function counts(status) {
     const box = document.getElementById("counts");
     const stat = (v, k, small) => el("div", { class: "stat" }, el("div", { class: "v num" + (small ? " small" : ""), text: v }), el("div", { class: "k", text: k }));
     box.replaceChildren(
       stat(String(status.items), "Stocks in the latest run"),
       stat(String(status.days_with_success), "Days with a successful run"),
       stat(F.fmtDate(status.first_run_date), "First run", true),
-      stat(F.fmtDate(m.previousDate), "Previous run compared", true),
       stat(status.new_today.length ? status.new_today.join(", ") : "None", "New today", true),
       stat(status.gone_today.length ? status.gone_today.join(", ") : "None", "Gone today", true),
     );
@@ -73,7 +72,7 @@
   function movesTable(m) {
     const box = document.getElementById("moves");
     const lead = document.getElementById("moves-lead");
-    lead.textContent = "Rule: percent change in closing price between the two latest dates in the history, (new − old) ÷ old × 100, ranked by size. The top " + TOP_N + " are listed, the same as in the daily GitHub Issue.";
+    lead.textContent = "Percent change in closing price, (new − old) ÷ old × 100, ranked by size. The top " + TOP_N + " match the daily GitHub Issue.";
     if (!m.previousDate) {
       box.replaceChildren(el("p", { class: "empty", text: "There is only one day in the history so far, so there is nothing to compare with yet. The first moves appear after the next run." }));
       return;
@@ -103,6 +102,7 @@
 
   function latestTable(m) {
     const box = document.getElementById("latest");
+    document.getElementById("all-h").textContent = "All " + Object.keys(m.latest).length + " stocks";
     const list = Object.values(m.latest).sort((a, b) =>
       F.CATEGORIES.findIndex((c) => c.name === a.category) - F.CATEGORIES.findIndex((c) => c.name === b.category) || a.item_id.localeCompare(b.item_id));
     const body = list.map((r) => {
@@ -113,9 +113,7 @@
         el("td", { class: "n", text: F.fmtMoney(r.close) }),
         el("td", { class: "n " + F.dirClass(mv && mv.change), text: mv ? F.fmtSignedMoney(mv.change) : "—" }),
         el("td", { class: "n " + F.dirClass(mv && mv.move_pct), text: mv ? F.arrow(mv.move_pct) + F.fmtPct(mv.move_pct) : "—" }),
-        el("td", { class: "n " + F.dirClass(r.change_pct), text: F.fmtPct(r.change_pct) }),
-        el("td", { class: "n", text: F.fmtCompact(r.volume) }),
-        el("td", { text: r.source }));
+        el("td", { class: "n", text: F.fmtCompact(r.volume) }));
     });
     box.replaceChildren(el("table", {},
       el("caption", { class: "visually-hidden", text: "Latest values of every stock" }),
@@ -124,18 +122,15 @@
         el("th", { class: "n", scope: "col", text: "Close" }),
         el("th", { class: "n", scope: "col", text: "Since last run ($)" }),
         el("th", { class: "n", scope: "col", text: "Since last run (%)" }),
-        el("th", { class: "n", scope: "col", text: "Market day (%)" }),
-        el("th", { class: "n", scope: "col", text: "Volume" }),
-        el("th", { scope: "col", text: "Source" }))),
+        el("th", { class: "n", scope: "col", text: "Volume" }))),
       el("tbody", {}, body)));
   }
 
   F.loadData().then(({ rows, status }) => {
     const m = F.computeMoves(rows);
-    document.getElementById("last-run").textContent =
-      "Last run " + F.fmtTime(status.run_time) + " · history covers " + F.dates(rows).length + " day" + (F.dates(rows).length === 1 ? "" : "s") + ", " + F.fmtDate(status.first_run_date) + " to " + F.fmtDate(m.latestDate) + ".";
-    scoreboard(m, rows, status);
-    counts(status, m);
+    document.getElementById("last-run").textContent = "Last run " + F.fmtTime(status.run_time);
+    scoreboard(m);
+    counts(status);
     sources(status);
     movesTable(m);
     latestTable(m);
