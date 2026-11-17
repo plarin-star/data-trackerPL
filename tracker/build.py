@@ -6,8 +6,8 @@ same columns, and writes the whole file again. Running the build twice gives
 the same file, and a change to a rule here applies to every day.
 
 For each day and each stock, the row comes from the first source in
-config.SOURCE_PRIORITY that has the stock that day (Yahoo, then Finnhub).
-So there is exactly one row per stock per day. A day with no raw file for a
+config.SOURCE_PRIORITY that has the stock that day (Yahoo, then Nasdaq,
+then Finnhub). So there is exactly one row per stock per day. A day with no raw file for a
 source has no rows from that source.
 
 Run it on its own with:

@@ -1,4 +1,4 @@
-"""Source 3: Nasdaq quote endpoint (JSON, no login, no key).
+"""Source 2: Nasdaq quote endpoint (JSON, no login, no key).
 
 For each ticker:
     https://api.nasdaq.com/api/quote/NKE/info?assetclass=stocks

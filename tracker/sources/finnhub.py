@@ -1,4 +1,4 @@
-"""Source 2: Finnhub quote endpoint (JSON, free API key).
+"""Source 3: Finnhub quote endpoint (JSON, free API key).
 
 For each ticker:
     https://finnhub.io/api/v1/quote?symbol=NKE
