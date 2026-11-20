@@ -38,3 +38,6 @@ run_time,date,source,ok,count,error
 2026-11-19T14:28:09Z,2026-11-19,yahoo,True,15,
 2026-11-19T14:28:09Z,2026-11-19,nasdaq,True,15,
 2026-11-19T14:28:09Z,2026-11-19,finnhub,True,15,
+2026-11-20T14:02:35Z,2026-11-20,yahoo,True,15,
+2026-11-20T14:02:35Z,2026-11-20,nasdaq,True,15,
+2026-11-20T14:02:35Z,2026-11-20,finnhub,True,15,
